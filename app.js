@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const ejs = require("ejs");
 const date = require(__dirname + "/date.js");
 const _ = require("lodash");
+const private=require(__dirname+"/private.js");
 
 const app = express();
 //for checking the form is submitted
@@ -15,15 +16,30 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-mongoose
-  .connect("mongodb://localhost:27017/bankDB", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(function () {
-    console.log("connected to bankDB");
-  })
-  .catch((err) => console.error(err));
+
+const password=private.password;
+// mongoose
+//   .connect("mongodb://localhost:27017/bankDB", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(function () {
+//     console.log("connected to bankDB");
+//   })
+//   .catch((err) => console.error(err));
+
+(async function() {
+  try {
+    await mongoose.connect(`mongodb+srv://919atul:${password}@cluster0.iz4lpfy.mongodb.net/bankDB`, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("Connected to bankDB");
+  } catch (err) {
+    console.error(err);
+  }
+})();
+
 
 //schema for user
 const userSchema = new mongoose.Schema({
@@ -388,6 +404,6 @@ app.post("/customerlist", async function (req, res) {
   }
 });
 
-app.listen(3000, function () {
+app.listen(3000 || process.env.PORT, function () {
   console.log("server started at port 3000");
 });
