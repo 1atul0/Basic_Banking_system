@@ -1,0 +1,33 @@
+<%- include("partials/header")%>
+<section class="transaction">
+  <h2 class="transaction-heading">TRANSACTION HISTORY</h2>
+  <HR>
+    <table class="table table-striped customerlist-table">
+      <thead>
+        <tr>
+          <th>S.no.</th>
+          <th>Sender</th>
+          <th>Receiver</th>
+          <th>Transer amount</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        
+        <%transactions.forEach(function(transaction){%>
+          <tr>
+            <td><%=i%></td>
+            <td><%=transaction.sender%></td>
+            <td><%=transaction.reciever%></td>
+            <td><%=transaction.amount%></td>
+            <td><%=transaction.date%></td>
+          </tr>
+          
+          <%i++;%>
+        <%})%>
+        
+      </tbody>
+    </table>
+</section>
+<%- include("partials/footer")%>

@@ -1,0 +1,64 @@
+<%- include("partials/header")%>
+<section class="transfer">
+  <div class="form-container">
+    <h4>Transfer Money :-</h4>
+    <hr>
+    <form>
+      <label class="form-label"for="sender">Sender:</label>
+      <select id="sender" name="sender">
+        <option value="">-- Select a customer --</option>
+        <%customers.forEach(function(customer){%>
+          <option value="<%=customer.name%>"><%=customer.name%></option>
+        <%})%>
+      </select>
+      <!-- <input type="text" id="sender" name="sender">-->
+      <br><br> 
+      <label class="form-label"for="receiver">Receiver:</label>
+      <select id="receiver" name="receiver">
+        <option value="">-- Select a customer --</option>
+        <%customers.forEach(function(customer){%>
+          <option value="<%=customer.name%>"><%=customer.name%></option>
+        <%})%>
+      </select>
+      <!-- <input type="text" id="receiver" name="receiver"> -->
+      <br><br>
+      <label class="form-label"for="amount">Amount:</label>
+      <input type="number" id="amount" name="amount"><br><br>
+      <input type="submit"class="btn btn-success" value="Send Money">
+    </form>
+  </div>
+
+</section>
+
+<section class="customerlist" id="customerlist">
+  <h2 class="customerlist-heading">CUSTOMER LIST</h2>
+  <hr>
+  <table class="table table-striped customerlist-table">
+    <thead>
+      <tr>
+        <th>S.no.</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      
+      <%customers.forEach(function(customer){%>
+        <tr>
+          <td><%=i%></td>
+          <td><%=customer.name%></td>
+          <td><%=customer.email%></td>
+          <td><%=customer.balance%></td>
+        </tr>
+        
+        <%i++;%>
+      <%})%>
+      
+    </tbody>
+  </table>
+</section>
+<!-- <h1>i am from customerlist</h1> -->
+
+<%- include ("partials/footer")%>
