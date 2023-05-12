@@ -1,15 +1,17 @@
-const express=require("express");
-const bodyParser=require("body-parser");
-const mongoose=require("mongoose");
-const ejs=require("ejs");
-const date=require(__dirname+"/date.js");
-console.log(date.getDate());
+const express = require("express");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const ejs = require("ejs");
+const date = require(__dirname + "/date.js");
+const _=require("lodash");
 
+const app = express();
+//for checking the form is submitted
+let result=false;
+let exits=false;
 
-const app=express();
-
-app.set("view engine","ejs");
-app.use(bodyParser.urlencoded({extended:true}));
+app.set("view engine", "ejs");
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 mongoose
@@ -29,13 +31,8 @@ const userSchema = new mongoose.Schema({
   balance: Number,
 });
 
-
-
 //make model of user
 const User = mongoose.model("User", userSchema);
-
-
-
 
 const user1 = new User({
   name: "Atul kumar",
@@ -110,113 +107,155 @@ const userData = [
   user10,
 ];
 
-
-
 //if user collectio is empty
-User.find().then((foundItems) => {
-  if (foundItems.length == 0) {
-    User.insertMany(userData)
-    .then(()=>console.log("inserted dummy data in User collection"))
-    .catch((err)=>console.error(err));
-  }
-})
-.catch((err)=>console.error(err));
+User.find()
+  .then((foundItems) => {
+    if (foundItems.length == 0) {
+      User.insertMany(userData)
+        .then(() => console.log("inserted dummy data in User collection"))
+        .catch((err) => console.error(err));
+    }
+  })
+  .catch((err) => console.error(err));
 
 //transaction schema
-const transactionSchema=new mongoose.Schema({
-  sender:String,
-  reciever:String,
-  amount:Number,
-  date:String,
+const transactionSchema = new mongoose.Schema({
+  sender: String,
+  reciever: String,
+  amount: Number,
+  date: String,
 });
 //make model of transaction
-const Transaction=mongoose.model("Transaction",transactionSchema);
+const Transaction = mongoose.model("Transaction", transactionSchema);
 //dummy data for transaction
-const t1=new Transaction({
-  sender:"Atul kumar",
-  reciever:"Alok kumar",
-  amount:1000,
-  date:date.getDate()
-  
+const t1 = new Transaction({
+  sender: "Atul kumar",
+  reciever: "Alok kumar",
+  amount: 1000,
+  date: date.getDate(),
 });
-const t2=new Transaction({
-  sender:"Chandan kumar",
-  reciever:"Alok kumar",
-  amount:900,
-  date:date.getDate()
+const t2 = new Transaction({
+  sender: "Chandan kumar",
+  reciever: "Alok kumar",
+  amount: 900,
+  date: date.getDate(),
 });
-const t3=new Transaction({
-  sender:"Pranav kumar",
-  reciever:"Alok kumar",
-  amount:1000,
-  date:date.getDate()
+const t3 = new Transaction({
+  sender: "Pranav kumar",
+  reciever: "Alok kumar",
+  amount: 1000,
+  date: date.getDate(),
 });
-const t4=new Transaction({
-  sender:"Sushant kumar",
-  reciever:"Harsh kumar",
-  amount:1200,
-  date:date.getDate()
+const t4 = new Transaction({
+  sender: "Sushant kumar",
+  reciever: "Harsh kumar",
+  amount: 1200,
+  date: date.getDate(),
 });
-const t5=new Transaction({
-  sender:"Atul kumar",
-  reciever:"Pranav kumar",
-  amount:1800,
-  date:date.getDate()
+const t5 = new Transaction({
+  sender: "Atul kumar",
+  reciever: "Pranav kumar",
+  amount: 1800,
+  date: date.getDate(),
 });
-const t6=new Transaction({
-  sender:"Ashwani kumar",
-  reciever:"Subodh kumar",
-  amount:8762,
-  date:date.getDate()
+const t6 = new Transaction({
+  sender: "Ashwani kumar",
+  reciever: "Subodh kumar",
+  amount: 8762,
+  date: date.getDate(),
 });
-const t7=new Transaction({
-  sender:"Harsh kumar",
-  reciever:"Alok kumar",
-  amount:900,
-  date:date.getDate()
+const t7 = new Transaction({
+  sender: "Harsh kumar",
+  reciever: "Alok kumar",
+  amount: 900,
+  date: date.getDate(),
 });
-const transactionData=[t1,t2,t3,t4,t5,t6,t7];
+const transactionData = [t1, t2, t3, t4, t5, t6, t7];
 //if transaction collection is empty
-Transaction.find().then((foundItems) => {
-  if (foundItems.length == 0) {
-    Transaction.insertMany(transactionData)
-    .then(()=>console.log("inserted dummy data in Transaction collection"))
-    .catch((err)=>console.error(err));
-  }
-})
-.catch((err)=>console.error(err));
+Transaction.find()
+  .then((foundItems) => {
+    if (foundItems.length == 0) {
+      Transaction.insertMany(transactionData)
+        .then(() =>
+          console.log("inserted dummy data in Transaction collection")
+        )
+        .catch((err) => console.error(err));
+    }
+  })
+  .catch((err) => console.error(err));
 
-
-
-app.get("/",function(req,res){
+app.get("/", function (req, res) {
   res.render("home");
 });
 
-app.get("/customerlist",function(req,res){
+app.get("/customerlist", function (req, res) {
   User.find()
-  .then((foundUsers)=>{
-    res.render("customerlist",{customers:foundUsers,i:1});
-  })
-  .catch((err)=>console.error(err));
-  
+    .then((foundUsers) => {
+      if(result===true)
+      {
+        result=false;
+        res.render("customerlist", { customers: foundUsers, i: 1 ,message:"welcome to spark foundation bank"});
+      }
+      else if(exits===true){
+        exits=false;
+        res.render("customerlist",{customers:foundUsers,i:1,message:"user already exist!" })
+      }
+      else{
+        res.render("customerlist",{customers:foundUsers,i:1,message:null})
+      }
+    })
+    .catch((err) => console.error(err));
 });
-app.get("/transaction",function(req,res){
+app.get("/transaction", function (req, res) {
   Transaction.find()
-  .then((foundTransaction)=>{
-    res.render("transaction",{transactions:foundTransaction,i:1});
-  })
-  .catch((err)=>console.error(err));
-  
+    .then((foundTransaction) => {
+      res.render("transaction", { transactions: foundTransaction, i: 1 });
+    })
+    .catch((err) => console.error(err));
 });
 
-app.get("/contact",function(req,res){
+app.get("/contact", function (req, res) {
   res.render("contact");
-})
+});
 
 
 
+app.post("/", function (req, res) {
+  const user = new User({
+    name: _.capitalize(req.body.name),
+    email: req.body.email,
+    balance: req.body.balance,
+  });
+  // console.log(user);
+  User.findOne({email:req.body.email}).then((foundUser) => {
+    if (!foundUser) {
+      user
+        .save()
+        .then(() => console.log("registered new user."))
+        .catch((err) => console.error(err));
+        User.find()
+    .then((foundUsers) => {
+      result=true;
+      res.redirect("/customerlist");
+    })
+    .catch((err) => console.error(err));
+       
+    }
+    else
+    {
+      console.log("user exits");
+      User.find()
+    .then((foundUsers) => {
+      exits=true;
+      res.redirect("/customerlist");
+    }).catch((err)=>console.error(err));
+    }
+  })
+  .catch((err)=>console.error(err));
+});
 
 
-app.listen(3000,function(){
+
+app.listen(3000, function () {
   console.log("server started at port 3000");
-})
+});
