@@ -9,9 +9,9 @@
   <div class="form-container">
     <h4>Transfer Money :-</h4>
     <hr>
-    <form>
+    <form action="/customerlist" method="post">
       <label class="form-label"for="sender">Sender:</label>
-      <select id="sender" name="sender">
+      <select id="first-select" name="sender" onchange="updateSecondSelect()" required>
         <option value="">-- Select a customer --</option>
         <%customers.forEach(function(customer){%>
           <option value="<%=customer.name%>"><%=customer.name%></option>
@@ -20,7 +20,7 @@
       <!-- <input type="text" id="sender" name="sender">-->
       <br><br> 
       <label class="form-label"for="receiver">Receiver:</label>
-      <select id="receiver" name="receiver">
+      <select id="second-select" name="receiver" required>
         <option value="">-- Select a customer --</option>
         <%customers.forEach(function(customer){%>
           <option value="<%=customer.name%>"><%=customer.name%></option>
@@ -29,7 +29,7 @@
       <!-- <input type="text" id="receiver" name="receiver"> -->
       <br><br>
       <label class="form-label"for="amount">Amount:</label>
-      <input type="number" id="amount" name="amount"><br><br>
+      <input type="number" id="amount" name="amount" required><br><br>
       <input type="submit"class="btn btn-success" value="Send Money">
     </form>
   </div>

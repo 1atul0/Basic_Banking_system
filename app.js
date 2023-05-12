@@ -3,12 +3,13 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const ejs = require("ejs");
 const date = require(__dirname + "/date.js");
-const _=require("lodash");
+const _ = require("lodash");
 
 const app = express();
 //for checking the form is submitted
-let result=false;
-let exits=false;
+let result = false;
+let exits = false;
+let lowamount = false;
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -121,7 +122,7 @@ User.find()
 //transaction schema
 const transactionSchema = new mongoose.Schema({
   sender: String,
-  reciever: String,
+  receiver: String,
   amount: Number,
   date: String,
 });
@@ -130,43 +131,43 @@ const Transaction = mongoose.model("Transaction", transactionSchema);
 //dummy data for transaction
 const t1 = new Transaction({
   sender: "Atul kumar",
-  reciever: "Alok kumar",
+  receiver: "Alok kumar",
   amount: 1000,
   date: date.getDate(),
 });
 const t2 = new Transaction({
   sender: "Chandan kumar",
-  reciever: "Alok kumar",
+  receiver: "Alok kumar",
   amount: 900,
   date: date.getDate(),
 });
 const t3 = new Transaction({
   sender: "Pranav kumar",
-  reciever: "Alok kumar",
+  receiver: "Alok kumar",
   amount: 1000,
   date: date.getDate(),
 });
 const t4 = new Transaction({
   sender: "Sushant kumar",
-  reciever: "Harsh kumar",
+  receiver: "Harsh kumar",
   amount: 1200,
   date: date.getDate(),
 });
 const t5 = new Transaction({
   sender: "Atul kumar",
-  reciever: "Pranav kumar",
+  receiver: "Pranav kumar",
   amount: 1800,
   date: date.getDate(),
 });
 const t6 = new Transaction({
   sender: "Ashwani kumar",
-  reciever: "Subodh kumar",
+  receiver: "Subodh kumar",
   amount: 8762,
   date: date.getDate(),
 });
 const t7 = new Transaction({
   sender: "Harsh kumar",
-  reciever: "Alok kumar",
+  receiver: "Alok kumar",
   amount: 900,
   date: date.getDate(),
 });
@@ -191,21 +192,38 @@ app.get("/", function (req, res) {
 app.get("/customerlist", function (req, res) {
   User.find()
     .then((foundUsers) => {
-      if(result===true)
-      {
-        result=false;
-        res.render("customerlist", { customers: foundUsers, i: 1 ,message:"welcome to spark foundation bank"});
-      }
-      else if(exits===true){
-        exits=false;
-        res.render("customerlist",{customers:foundUsers,i:1,message:"user already exist!" })
-      }
-      else{
-        res.render("customerlist",{customers:foundUsers,i:1,message:null})
+      if (result === true) {
+        result = false;
+        res.render("customerlist", {
+          customers: foundUsers,
+          i: 1,
+          message: "welcome to spark foundation bank",
+        });
+      } else if (exits === true) {
+        exits = false;
+        res.render("customerlist", {
+          customers: foundUsers,
+          i: 1,
+          message: "user already exist!",
+        });
+      } else if (lowamount === true) {
+        lowamount = false;
+        res.render("customerlist", {
+          customers: foundUsers,
+          i: 1,
+          message: "Not present required money",
+        });
+      } else {
+        res.render("customerlist", {
+          customers: foundUsers,
+          i: 1,
+          message: null,
+        });
       }
     })
     .catch((err) => console.error(err));
 });
+
 app.get("/transaction", function (req, res) {
   Transaction.find()
     .then((foundTransaction) => {
@@ -218,8 +236,6 @@ app.get("/contact", function (req, res) {
   res.render("contact");
 });
 
-
-
 app.post("/", function (req, res) {
   const user = new User({
     name: _.capitalize(req.body.name),
@@ -227,34 +243,150 @@ app.post("/", function (req, res) {
     balance: req.body.balance,
   });
   // console.log(user);
-  User.findOne({email:req.body.email}).then((foundUser) => {
-    if (!foundUser) {
-      user
-        .save()
-        .then(() => console.log("registered new user."))
-        .catch((err) => console.error(err));
+  User.findOne({ email: req.body.email })
+    .then((foundUser) => {
+      if (!foundUser) {
+        user
+          .save()
+          .then(() => console.log("registered new user."))
+          .catch((err) => console.error(err));
         User.find()
-    .then((foundUsers) => {
-      result=true;
-      res.redirect("/customerlist");
+          .then((foundUsers) => {
+            result = true;
+            res.redirect("/customerlist");
+          })
+          .catch((err) => console.error(err));
+      } else {
+        console.log("user exits");
+        User.find()
+          .then((foundUsers) => {
+            exits = true;
+            res.redirect("/customerlist");
+          })
+          .catch((err) => console.error(err));
+      }
     })
     .catch((err) => console.error(err));
-       
-    }
-    else
-    {
-      console.log("user exits");
-      User.find()
-    .then((foundUsers) => {
-      exits=true;
-      res.redirect("/customerlist");
-    }).catch((err)=>console.error(err));
-    }
-  })
-  .catch((err)=>console.error(err));
 });
 
+app.post("/customerlist", async function (req, res) {
+  // //make new trnsaction
+  // var senderBalance;
+  // var receiverBalance;
+  // //finding sender data
+  // var amount=parseInt(req.body.amount);
+  // // console.log(typeof(amount));
 
+  // User.findOne({ name: req.body.sender })
+  //   .then((foundUser) => {
+  //     // if(foundUser)
+  //     // console.log("user in  founderuserj");
+  //     // console.log(typeof(foundUser.balance));
+  //     // console.log(foundUser.balance);
+  //     if (foundUser.balance >=amount) {
+  //       // console.log("user exits");
+  //       const transaction = new Transaction({
+  //         sender: req.body.sender,
+  //         receiver: req.body.receiver,
+  //         amount: amount,
+  //         date: date.getDate(),
+  //       });
+  //       transaction
+  //         .save()
+  //         .then(() => console.log("transaction successfull"))
+  //         .catch((err) => console.error(err));
+  //       senderBalance = foundUser.balance - amount;
+
+  //     } else {
+  //       lowamount = true;
+  //       // console.log("user not exits");
+  //       console.log("balance insuffiecent");
+  //       res.redirect("/customerlist");
+  //     }
+  //   })
+  //   .catch((err) => console.error(err));
+
+  // //finding receiver data
+  // User.findOne({ name: req.body.receiver })
+  //   .then((foundUser) => {
+  //     receiverBalance = foundUser.balance + amount;
+  //     console.log("updated");
+  //   })
+  //   .catch((err) => console.error(err));
+
+  //   console.log(receiverBalance);
+  //   console.log(senderBalance);
+
+  // //updating sender data
+  // User.updateOne({name:req.body.sender},{
+  //   $set:{
+  //     balance:senderBalance,
+  //   }
+  // });
+
+  // //updaing receiver data
+  // User.updateOne({name:req.body.receiver},{
+  //   $set:{
+  //     balance:receiverBalance,
+  //   }
+  // });
+
+  // console.log(senderBalance)
+  // console.log(receiverBalance)
+  // res.redirect("/customerlist");
+
+  try {
+    const amount = parseInt(req.body.amount);
+
+    // Finding sender data
+    const foundSender = await User.findOne({ name: req.body.sender });
+    if (!foundSender || foundSender.balance <= amount) {
+      console.log("Sender not found or balance insufficient");
+      lowamount = true;
+      res.redirect("/customerlist");
+      return;
+    }
+
+    // Finding receiver data
+    const foundReceiver = await User.findOne({ name: req.body.receiver });
+    if (!foundReceiver) {
+      console.log("Receiver not found");
+      res.redirect("/customerlist");
+      return;
+    }
+
+    // Create new transaction
+    const transaction = new Transaction({
+      sender: req.body.sender,
+      receiver: req.body.receiver,
+      amount: amount,
+      date: date.getDate(),
+    });
+    await transaction.save();
+    console.log("Transaction successful");
+
+    // Update sender balance
+    const senderBalance = foundSender.balance - amount;
+    await User.updateOne(
+      { name: req.body.sender },
+      { $set: { balance: senderBalance } }
+    );
+
+    // Update receiver balance
+    const receiverBalance = foundReceiver.balance + amount;
+    await User.updateOne(
+      { name: req.body.receiver },
+      { $set: { balance: receiverBalance } }
+    );
+
+    console.log(`Sender balance updated to ${senderBalance}`);
+    console.log(`Receiver balance updated to ${receiverBalance}`);
+    res.redirect("/customerlist");
+  } catch (err) {
+    console.error(err);
+    res.redirect("/customerlist");
+  }
+});
 
 app.listen(3000, function () {
   console.log("server started at port 3000");
