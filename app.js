@@ -1,8 +1,16 @@
+  
+  // Author :- Atul kumar
+  // Intern at The Sparks Foundation 
+
+
 const express = require("express");
+//hadle data from form
 const bodyParser = require("body-parser");
+//for connecting to database
 const mongoose = require("mongoose");
 const ejs = require("ejs");
 const date = require(__dirname + "/date.js");
+//for capitalize user name after singup
 const _ = require("lodash");
 const private=require(__dirname+"/private.js");
 
@@ -28,6 +36,7 @@ const password=private.password;
 //   })
 //   .catch((err) => console.error(err));
 
+//connecting database with database name bankDB
 (async function() {
   try {
     await mongoose.connect(`mongodb+srv://919atul:${password}@cluster0.iz4lpfy.mongodb.net/bankDB`, {
@@ -51,6 +60,7 @@ const userSchema = new mongoose.Schema({
 //make model of user
 const User = mongoose.model("User", userSchema);
 
+//creating dummy data for Users
 const user1 = new User({
   name: "Atul kumar",
   email: "919atul@gmail.com",
@@ -111,6 +121,7 @@ const user10 = new User({
   balance: 6700,
 });
 
+//made array of users 
 const userData = [
   user1,
   user2,
@@ -124,7 +135,7 @@ const userData = [
   user10,
 ];
 
-//if user collectio is empty
+//if user collection is empty,then insert dummy data
 User.find()
   .then((foundItems) => {
     if (foundItems.length == 0) {
@@ -188,7 +199,7 @@ const t7 = new Transaction({
   date: date.getDate(),
 });
 const transactionData = [t1, t2, t3, t4, t5, t6, t7];
-//if transaction collection is empty
+//if transaction collection is empty,insert dummy transactions
 Transaction.find()
   .then((foundItems) => {
     if (foundItems.length == 0) {
@@ -201,13 +212,17 @@ Transaction.find()
   })
   .catch((err) => console.error(err));
 
+
+//home page render
 app.get("/", function (req, res) {
   res.render("home");
 });
 
+//customerlist page render,with customer name
 app.get("/customerlist", function (req, res) {
   User.find()
     .then((foundUsers) => {
+      //if new user register then this work
       if (result === true) {
         result = false;
         res.render("customerlist", {
@@ -215,7 +230,10 @@ app.get("/customerlist", function (req, res) {
           i: 1,
           message: "welcome to spark foundation bank",
         });
-      } else if (exits === true) {
+      }
+      // if user already present ,then directly goes to customerlist page with message
+      
+       else if (exits === true) {
         exits = false;
         res.render("customerlist", {
           customers: foundUsers,
@@ -240,6 +258,7 @@ app.get("/customerlist", function (req, res) {
     .catch((err) => console.error(err));
 });
 
+//render transaction page
 app.get("/transaction", function (req, res) {
   Transaction.find()
     .then((foundTransaction) => {
@@ -247,11 +266,12 @@ app.get("/transaction", function (req, res) {
     })
     .catch((err) => console.error(err));
 });
-
+//render contact page
 app.get("/contact", function (req, res) {
   res.render("contact");
 });
 
+//if new user sign up then handle data and insrt in db
 app.post("/", function (req, res) {
   const user = new User({
     name: _.capitalize(req.body.name),
@@ -403,7 +423,7 @@ app.post("/customerlist", async function (req, res) {
     res.redirect("/customerlist");
   }
 });
-
+//check for server is listen or not
 app.listen(3000 || process.env.PORT, function () {
   console.log("server started at port 3000");
 });
