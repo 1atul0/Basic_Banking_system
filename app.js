@@ -2,7 +2,7 @@
   // Author :- Atul kumar
   // Intern at The Sparks Foundation 
 
-
+  require('dotenv').config();
 const express = require("express");
 //hadle data from form
 const bodyParser = require("body-parser");
@@ -12,7 +12,7 @@ const ejs = require("ejs");
 const date = require(__dirname + "/date.js");
 //for capitalize user name after singup
 const _ = require("lodash");
-const private=require(__dirname+"/private.js");
+
 
 const app = express();
 //for checking the form is submitted
@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 
-const password=private.password;
+// const password=private.password;
 // mongoose
 //   .connect("mongodb://localhost:27017/bankDB", {
 //     useNewUrlParser: true,
@@ -39,7 +39,7 @@ const password=private.password;
 //connecting database with database name bankDB
 (async function() {
   try {
-    await mongoose.connect(`mongodb+srv://919atul:${password}@cluster0.iz4lpfy.mongodb.net/bankDB`, {
+    await mongoose.connect(`mongodb+srv://${process.env.USER}:${process.env.PASS}@cluster0.iz4lpfy.mongodb.net/bankDB`, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
