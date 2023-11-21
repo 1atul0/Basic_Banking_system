@@ -19,6 +19,8 @@ const app = express();
 let result = false;
 let exits = false;
 let lowamount = false;
+const user=process.env.USER;
+const password=process.env.PASS;
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -39,7 +41,7 @@ app.use(express.static("public"));
 //connecting database with database name bankDB
 (async function() {
   try {
-    await mongoose.connect(`mongodb+srv://${process.env.USER}:${process.env.PASS}@cluster0.iz4lpfy.mongodb.net/bankDB`, {
+    await mongoose.connect(`mongodb+srv://${user}:${password}@cluster0.iz4lpfy.mongodb.net/bankDB`, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
