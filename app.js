@@ -1,8 +1,8 @@
-  
-  // Author :- Atul kumar
-  // Intern at The Sparks Foundation 
 
-  require('dotenv').config();
+// Author :- Atul kumar
+// Intern at The Sparks Foundation 
+
+require('dotenv').config();
 const express = require("express");
 //hadle data from form
 const bodyParser = require("body-parser");
@@ -19,8 +19,8 @@ const app = express();
 let result = false;
 let exits = false;
 let lowamount = false;
-const user=process.env.USER;
-const password=process.env.PASS;
+const user = process.env.USER;
+const password = process.env.PASS;
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -39,7 +39,7 @@ app.use(express.static("public"));
 //   .catch((err) => console.error(err));
 
 //connecting database with database name bankDB
-(async function() {
+(async function () {
   try {
     await mongoose.connect(`mongodb+srv://${user}:${password}@cluster0.iz4lpfy.mongodb.net/bankDB`, {
       useNewUrlParser: true,
@@ -234,8 +234,8 @@ app.get("/customerlist", function (req, res) {
         });
       }
       // if user already present ,then directly goes to customerlist page with message
-      
-       else if (exits === true) {
+
+      else if (exits === true) {
         exits = false;
         res.render("customerlist", {
           customers: foundUsers,
