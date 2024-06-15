@@ -97,9 +97,9 @@ const userData = [
 User.find().then((foundItems) => {
   if (foundItems.length == 0) {
     User.insertMany(userData)
-    .then(()=>console.log("inserted dummy data"))
-    .catch((err)=>console.error(err));
+      .then(() => console.log("inserted dummy data"))
+      .catch((err) => console.error(err));
   }
 })
-.catch((err)=>console.error(err));
+  .catch((err) => console.error(err));
 
