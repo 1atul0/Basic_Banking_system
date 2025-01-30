@@ -45,7 +45,7 @@ app.use(express.static("public"));
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log("Connected to bankDB");
+    console.log("Connected to bankDB1");
   } catch (err) {
     console.error(err);
   }
@@ -221,8 +221,8 @@ app.get("/", function (req, res) {
 });
 
 //customerlist page render,with customer name
-app.get("/customerlist", function (req, res) {
-  User.find()
+app.get("/customerlist",async function (req, res) {
+  await User.find()
     .then((foundUsers) => {
       //if new user register then this work
       if (result === true) {
@@ -261,8 +261,8 @@ app.get("/customerlist", function (req, res) {
 });
 
 //render transaction page
-app.get("/transaction", function (req, res) {
-  Transaction.find()
+app.get("/transaction",async function (req, res) {
+  await Transaction.find()
     .then((foundTransaction) => {
       res.render("transaction", { transactions: foundTransaction, i: 1 });
     })
@@ -274,14 +274,14 @@ app.get("/contact", function (req, res) {
 });
 
 //if new user sign up then handle data and insrt in db
-app.post("/", function (req, res) {
+app.post("/",async function (req, res) {
   const user = new User({
     name: _.capitalize(req.body.name),
     email: req.body.email,
     balance: req.body.balance,
   });
   // console.log(user);
-  User.findOne({ email: req.body.email })
+ await  User.findOne({ email: req.body.email })
     .then((foundUser) => {
       if (!foundUser) {
         user

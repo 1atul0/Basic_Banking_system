@@ -1,14 +1,12 @@
 const mongoose = require("mongoose");
 
-mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(function () {
-    console.log("connected to bankDB");
-  })
-  .catch((err) => console.error(err));
+// mongoose
+//   .connect(process.env.MONGO_URL, {
+//   })
+//   .then(function () {
+//     console.log("connected to bankDB");
+//   })
+//   .catch((err) => console.error(err));
 
 //schema for user
 const userSchema = new mongoose.Schema({
