@@ -39,17 +39,27 @@ app.use(express.static("public"));
 //   .catch((err) => console.error(err));
 
 //connecting database with database name bankDB
-(async function () {
+
+async function connectDB() {
   try {
-    await mongoose.connect(`mongodb+srv://${user}:${password}@cluster0.iz4lpfy.mongodb.net/bankDB`, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(`mongodb+srv://${user}:${password}@cluster0.iz4lpfy.mongodb.net/bankDB`);
     console.log("Connected to bankDB1");
   } catch (err) {
     console.error(err);
   }
-})();
+}
+connectDB();
+// (async function () {
+//   try {
+//     await mongoose.connect(`mongodb+srv://${user}:${password}@cluster0.iz4lpfy.mongodb.net/bankDB`, {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true,
+//     });
+//     console.log("Connected to bankDB1");
+//   } catch (err) {
+//     console.error(err);
+//   }
+// })();
 
 
 //schema for user
@@ -138,7 +148,8 @@ const userData = [
 ];
 
 //if user collection is empty,then insert dummy data
-User.find()
+async function insertDummyData(){
+  await User.find()
   .then((foundItems) => {
     if (foundItems.length == 0) {
       User.insertMany(userData)
@@ -147,6 +158,9 @@ User.find()
     }
   })
   .catch((err) => console.error(err));
+}
+insertDummyData();
+
 
 //transaction schema
 const transactionSchema = new mongoose.Schema({
@@ -202,7 +216,8 @@ const t7 = new Transaction({
 });
 const transactionData = [t1, t2, t3, t4, t5, t6, t7];
 //if transaction collection is empty,insert dummy transactions
-Transaction.find()
+async function insertDummyTransaction(){
+  await Transaction.find()
   .then((foundItems) => {
     if (foundItems.length == 0) {
       Transaction.insertMany(transactionData)
@@ -213,6 +228,10 @@ Transaction.find()
     }
   })
   .catch((err) => console.error(err));
+}
+
+insertDummyTransaction();
+
 
 
 //home page render
@@ -308,70 +327,7 @@ app.post("/",async function (req, res) {
 });
 
 app.post("/customerlist", async function (req, res) {
-  // //make new trnsaction
-  // var senderBalance;
-  // var receiverBalance;
-  // //finding sender data
-  // var amount=parseInt(req.body.amount);
-  // // console.log(typeof(amount));
 
-  // User.findOne({ name: req.body.sender })
-  //   .then((foundUser) => {
-  //     // if(foundUser)
-  //     // console.log("user in  founderuserj");
-  //     // console.log(typeof(foundUser.balance));
-  //     // console.log(foundUser.balance);
-  //     if (foundUser.balance >=amount) {
-  //       // console.log("user exits");
-  //       const transaction = new Transaction({
-  //         sender: req.body.sender,
-  //         receiver: req.body.receiver,
-  //         amount: amount,
-  //         date: date.getDate(),
-  //       });
-  //       transaction
-  //         .save()
-  //         .then(() => console.log("transaction successfull"))
-  //         .catch((err) => console.error(err));
-  //       senderBalance = foundUser.balance - amount;
-
-  //     } else {
-  //       lowamount = true;
-  //       // console.log("user not exits");
-  //       console.log("balance insuffiecent");
-  //       res.redirect("/customerlist");
-  //     }
-  //   })
-  //   .catch((err) => console.error(err));
-
-  // //finding receiver data
-  // User.findOne({ name: req.body.receiver })
-  //   .then((foundUser) => {
-  //     receiverBalance = foundUser.balance + amount;
-  //     console.log("updated");
-  //   })
-  //   .catch((err) => console.error(err));
-
-  //   console.log(receiverBalance);
-  //   console.log(senderBalance);
-
-  // //updating sender data
-  // User.updateOne({name:req.body.sender},{
-  //   $set:{
-  //     balance:senderBalance,
-  //   }
-  // });
-
-  // //updaing receiver data
-  // User.updateOne({name:req.body.receiver},{
-  //   $set:{
-  //     balance:receiverBalance,
-  //   }
-  // });
-
-  // console.log(senderBalance)
-  // console.log(receiverBalance)
-  // res.redirect("/customerlist");
 
   try {
     const amount = parseInt(req.body.amount);
